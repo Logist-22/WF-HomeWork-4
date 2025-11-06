@@ -1,149 +1,50 @@
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+п»їusing System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using static System.Windows.Forms.DataFormats;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace WF_HomeWork_4
 {
-    public partial class Notepad : Form
+    public partial class Form1 : Form
     {
-        public Notepad()
+        public Form1()
         {
             InitializeComponent();
-            TitleName();
         }
-
         string filePath = "";
-        private void TitleName()
-        {
-            if (string.IsNullOrEmpty(filePath))
-                this.Text = $"Безымянный - Блокнот";
-            else
-                this.Text = $"{Path.GetFileNameWithoutExtension(filePath)} - Блокнот";
-        }
 
-        private void Saving()
+        private void buttonLoad_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(filePath))
-            {
-                using (SaveFileDialog dialog = new SaveFileDialog())
-                {
-                    dialog.Title = "Сохранить файл";
-                    dialog.Filter = "Текстовые файлы (*.txt) |*.txt| Все файлы(*.*) | *.*";
-                    dialog.DefaultExt = "txt";
-                    dialog.AddExtension = true;
-                    if (string.IsNullOrEmpty(dialog.FileName))
-                    {
-                        if (dialog.ShowDialog() == DialogResult.OK)
-                        {
-                            File.WriteAllText(dialog.FileName, richTextBox1.Text);
-                            filePath = dialog.FileName;
-                            MessageBox.Show("Файл успешно сохранен");
-                            TitleName();
-                        }
-                    }
-                }
-            }
-            else
-            {
-                File.WriteAllText(filePath, richTextBox1.Text);
-                MessageBox.Show("Файл успешно сохранен");
-            }
-
-        }
-
-        
-        private void ToolStripMenuItemInfo_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Программа, версия: HomeWork-4\nАвтор: Лихачев Е. В.", "Блокнот: сведения", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void ToolStripMenuItemCreate_Click(object sender, EventArgs e)
-        {
-            if (richTextBox1.Modified)
-            {
-                DialogResult result = MessageBox.Show("Сохранить изменения в документе?", "Сохранение документа", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1, MessageBoxOptions.RightAlign);
-                switch (result)
-                {
-                    case DialogResult.Yes:
-                        Saving();
-                        richTextBox1.Clear();
-                        filePath = "";
-                        TitleName();
-                        break;
-                    case DialogResult.No:
-                        richTextBox1.Clear();
-                        filePath = "";
-                        TitleName();
-                        break;
-                    case DialogResult.Cancel:
-                        break;
-                }
-            }
-            else
-            {
-                richTextBox1.Clear();
-                filePath = "";
-                TitleName();
-            }
-        }
-
-        private void ToolStripMenuItemOpen_Click(object sender, EventArgs e)
-        {
-            if (richTextBox1.Modified)
-            {
-                DialogResult result = MessageBox.Show("Сохранить изменения в документе?", "Сохранение документа", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1, MessageBoxOptions.RightAlign);
-                switch (result)
-                {
-                    case DialogResult.Yes:
-                        Saving();
-                        break;
-                    case DialogResult.No:
-                        break;
-                    case DialogResult.Cancel:
-                        return;
-                }
-            }
+            textBoxInfo.Clear();
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
-                dialog.Title = "Выберите файл для открытия";
-                dialog.Filter = "Текстовые файлы (*.txt) |*.txt| Все файлы(*.*) | *.*";
+                dialog.Title = "Р’С‹Р±РµСЂРёС‚Рµ С„Р°Р№Р» РґР»СЏ РѕС‚РєСЂС‹С‚РёСЏ";
+                dialog.Filter = "РўРµРєСЃС‚РѕРІС‹Рµ С„Р°Р№Р»С‹ (*.txt) |*.txt| Р’СЃРµ С„Р°Р№Р»С‹(*.*) | *.*";
                 dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     filePath = dialog.FileName;
-                    richTextBox1.Text = File.ReadAllText(filePath);
-                    TitleName();
+                    textBoxInfo.Text = File.ReadAllText(filePath);
+                    this.Text = $"{Path.GetFileNameWithoutExtension(filePath)} - Р РµР¶РёРј РїСЂРѕСЃРјРѕС‚СЂР°";
+                    buttonEdit.Enabled = true;
                 }
             }
         }
 
-        private void ToolStripMenuItemSave_Click(object sender, EventArgs e)
+        private void buttonEdit_Click(object sender, EventArgs e)
         {
-            Saving();
-            TitleName();
-        }
-
-        private void ToolStripMenuItemSaveAs_Click(object sender, EventArgs e)
-        {
-            filePath = "";
-            Saving();
-        }
-
-        private void ToolStripMenuItemExit_Click(object sender, EventArgs e)
-        {
-            if (richTextBox1.Modified)
+            Form2 form2 = new Form2(textBoxInfo.Text, filePath);
+            if (form2.ShowDialog() == DialogResult.OK)
             {
-                DialogResult result = MessageBox.Show("Сохранить изменения в документе?", "Сохранение документа", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1, MessageBoxOptions.RightAlign);
-                switch (result)
-                {
-                    case DialogResult.Yes:
-                        Saving();                       
-                        break;
-                    case DialogResult.No:                       
-                        break;
-                    case DialogResult.Cancel:
-                        return;
-                }
+                textBoxInfo.Text = form2.Result;
             }
-            this.Close();
         }
     }
 }
