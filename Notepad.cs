@@ -48,7 +48,6 @@ namespace WF_HomeWork_4
             }
 
         }
-
         
         private void ToolStripMenuItemInfo_Click(object sender, EventArgs e)
         {
